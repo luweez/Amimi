@@ -1,5 +1,6 @@
 // --- Global Declarations ---
 const introContainer = document.getElementById('introContainer');
+const messagesContainer = document.getElementById('messagesContainer');
 const mainContent = document.getElementById('mainContent');
 const yesContent = document.getElementById('yesContent');
 
@@ -9,7 +10,7 @@ introContainer.addEventListener('click', () => {
     introContainer.classList.add('exit');
     
     // Make the main background and content fade in
-    mainContent.classList.add('visible');
+    messagesContainer.classList.add('visible');
 
     // Completely hide the intro container from the DOM layout after animations finish
     setTimeout(() => {
@@ -20,15 +21,55 @@ introContainer.addEventListener('click', () => {
     }, 1000); // 1000ms matches the transition durations safely
 });
 
-// --- 2. DOM CONTENT LOADED (MAIN INTERACTIONS & TRAIN SETUP) ---
 document.addEventListener("DOMContentLoaded", () => {
+    const messageText = document.getElementById('messageText');
+    const nextMsgBtn = document.getElementById('nextMsgBtn');
+
+    // Customize your message text layers here!
+    const messages = [
+        "Hi, bee eif eif ☺️. Thank you for understanding me always and giving me so much love than I deserved. I know na mahirap akong intindihin or ang unfair ko minsan, but I really appreciate you for being patient with me. I hope na kahit papaano, I make you happy and free kahit madalas tayong nag kakaproblema and minsan lang magsama.",
+        "I super duper root for your success, and gusto ko malaman mo na I will always be here to support you in any way I can. Hindi man ako perfect, pero I promise to always do my best to be there for you and maparamdam sayo na love kita. Di ko man mapakita sayo the way you wanted, but I hope you can feel how much I care for you.",
+        "I want us to continue growing together and create memories that we can cherish forever. I love you, Amerie. Let's keep making each other happy and be there for each other. Thank you for being in my life and for being the amazing person that you are. I am truly grateful to have you by my side even in the toughest of times."
+    ];
+    
+    let currentMessageIndex = 0;
+
+    nextMsgBtn.addEventListener('click', () => {
+        // If there is another message left in our array list
+        if (currentMessageIndex < messages.length - 1) {
+            currentMessageIndex++;
+            
+            // 1. Fade old text out
+            messageText.classList.add('fade-out');
+            
+            // 2. Swap text string contents and fade back in after animation clears
+            setTimeout(() => {
+                messageText.textContent = messages[currentMessageIndex];
+                messageText.classList.remove('fade-out');
+            }, 300); // 300ms matches the CSS text opacity transition speed
+
+        } else {
+            // No more messages left! Close up shop and push layout into Main Content
+            messagesContainer.classList.remove('visible');
+            mainContent.classList.add('visible');
+
+            setTimeout(() => {
+                messagesContainer.style.display = 'none';
+                // Allow the page to scroll normally if content overflows
+                document.body.style.overflow = 'auto'; 
+                document.documentElement.style.overflow = 'auto';
+            }, 1000);
+        }
+    });
+
+
     const yesButton = document.getElementById("yes");
     const noButton = document.getElementById("no");
     
     const yesImage = document.getElementById("image-yes");
     const noImage = document.getElementById("image-no");
 
-    const contentBox = document.querySelector('.content-box');
+    const mainContentBox = mainContent.querySelector('.content-box');
 
     // --- AUTOMATIC TRAIN IMAGES CLONING (ADDED HERE) ---
     function setupInfiniteTrain() {
@@ -77,8 +118,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function move() {
-        const boxWidth = contentBox.clientWidth;
-        const boxHeight = contentBox.clientHeight;
+        const boxWidth = mainContentBox.clientWidth;
+        const boxHeight = mainContentBox.clientHeight;
 
         const buttonWidth = noButton.offsetWidth;
         const buttonHeight = noButton.offsetHeight;
