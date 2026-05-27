@@ -1,0 +1,374 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-gradient: border-box;
+  box-sizing: border-box;
+}
+body, html {
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* Prevents scrollbars during animations */
+  background: url(assets/bg.png) no-repeat center center/cover;
+  color: #ffffff;
+}
+
+/* --- Container 1: Intro/Image Screen --- */
+.intro-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  cursor: pointer;
+  transition: visibility 1s;
+}
+
+/* Initial animation: Bottom to Center + Fade In */
+.butterfly {
+  width: 250px; /* Adjust size as needed */
+  height: auto;
+  margin-bottom: 15px;
+  opacity: 0;
+  animation: slideInUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.click-text {
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #101b2ca7;
+  opacity: 0;
+  /* Delays text slightly so it appears after the image starts moving */
+  animation: fadeIn 1s ease forwards 0.6s; 
+  transition: opacity 0.3s ease;
+}
+
+/* --- Exit Animation Classes (Triggered by JS) --- */
+.intro-container.exit .butterfly {
+  animation: slideOutUp 0.8s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+.intro-container.exit .click-text {
+  opacity: 0 !important;
+}
+
+/* --- Container 2: Main Content Section --- */
+.main-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  
+  /* Background image setup */
+  background: url('assets/bg2.png') no-repeat center center/cover;
+  
+  transition: opacity 1.5s ease 0.5s, visibility 1.5s ease 0.5s; /* Delayed to let intro finish */
+  z-index: 1;
+
+  overflow: hidden;
+}
+
+/* Class added via JS to fade in the main content */
+.main-content.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Placeholder Content Box */
+.content-box {
+  max-width: 600px;
+  padding: 40px;
+  background: rgba(228, 252, 253, 0.612);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  text-align: center;
+  border: 3px solid rgba(133, 193, 195, 0.612);
+
+  position: relative;
+  z-index: 5;
+
+  overflow: hidden;
+}
+
+.content-box h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #473924;
+}
+
+.content-box p {
+  color: #323232;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.content-box button {
+  padding: 12px 30px;
+  font-size: 1rem;
+  background-color: #d95bc0;
+  color: #dedede;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.content-box button:hover {
+  background-color: #fb78e1;
+}
+
+.choices {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  min-height: 50px;
+}
+
+#no {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  
+  /* Start relative, will switch to absolute via JS */
+  position: relative; 
+  z-index: 10;
+
+  transition: top 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+              left 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+              background 0.3s ease;
+}
+
+.hover-bg-image {
+  position: absolute;
+  
+  /* 1. Center horizontally, place slightly above vertical center */
+  bottom: 0;  /* Changed from 50% to naturally rest a bit higher */
+  left: 50%;
+
+  width: 180px;
+  height: 180px;
+  z-index: 2; 
+  
+  /* 2. START STATE:
+     - translateX(-50%) keeps it perfectly centered horizontally.
+     - translateY(30px) starts it just a tiny bit lower than its final resting spot.
+     This ensures it only moves UP A LITTLE BIT when triggered. */
+  transform: translate(-50%, 100%);
+  opacity: 0;
+  
+  /* Smooth animation speed configuration */
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: cover;
+}
+
+#image-yes {
+  background-image: url('assets/itun.png'); /* Replace with your actual Yes image asset */
+}
+#image-no {
+  background-image: url('assets/huh.png'); /* Replace with your actual Yes image asset */
+}
+
+.hover-bg-image.active {
+  transform: translate(-50%, 0%);
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  hover-bg-image {
+    width: 100px;  /* Slightly scales down the image so it fits smaller screens nicely */
+    height: 100px;
+
+    z-index: 0;
+  }
+}
+
+.yes-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+  background: url('assets/bg2.png') no-repeat center center/cover;
+  overflow: hidden;
+
+  /* Start state: invisible AND scaled down to nothing */
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0);
+  
+  /* Snappy 0.5-second pop using the springy cubic-bezier curve */
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              opacity 0.2s ease, 
+              visibility 0.2s ease;
+  z-index: 6; /* Sits on top of main-content */
+}
+
+/* Class added via JS to fade in the Yes screen */
+.yes-content.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1); /* Expands to full size with a bounce */
+}
+
+/* Yes Content Box Matching .content-box */
+.yes-content-box {
+  max-width: 600px;
+  width: 100%; /* Ensures scalability on smaller viewports */
+  padding: 40px;
+  background: rgba(228, 252, 253, 0.612);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  text-align: center;
+  border: 3px solid rgba(133, 193, 195, 0.612);
+  box-sizing: border-box;
+}
+
+.yes-content-box h1 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #473924;
+}
+
+/* Image styling within the Yes content box */
+.me {
+  width: 100%;
+  max-width: 250px; /* Adjust size to your preference */
+  height: auto;
+  border-radius: 8px; /* Optional: rounds image corners slightly for a cleaner look */
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Optional: gentle shadow */
+}
+
+.marquee-track {
+  display: flex;
+  width: 100%;
+  overflow: hidden; 
+  user-select: none;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.marq-group {
+  display: flex;
+  align-items: center;
+  gap: 25px; /* Spacing between images */
+  padding-right: 25px; /* Must match the gap perfectly to prevent looping stutters */
+  min-width: 100%;
+  flex-shrink: 0;
+}
+
+/* --- Larger Image Sizing for Desktop --- */
+.marq-group img {
+  width: 160px; /* Increased from 120px */
+  height: 160px; /* Increased from 120px */
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* --- ANIMATION CONTROLS --- */
+/* Top Track slides left continuously */
+.track-top .marq-group {
+  animation: trainMoveLeft 30s linear infinite;
+}
+
+/* Bottom Track slides right continuously */
+.track-bottom .marq-group {
+  animation: trainMoveRight 30s linear infinite;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .yes-content-box {
+    padding: 25px 20px;
+  }
+  .yes-content-box h1 {
+    font-size: 2rem;
+  }
+  .me {
+    max-width: 180px; /* Slightly smaller on mobile screens */
+  }
+}
+
+
+/* --- CSS Keyframes --- */
+
+/* 1. Intro: Bottom to Center + Fade In */
+@keyframes slideInUp {
+  from {
+      transform: translateY(100vh);
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
+
+/* 2. Generic Fade In (for text) */
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* 3. Outro: Center to Top + Fade Out */
+@keyframes slideOutUp {
+  from {
+      transform: translateY(0);
+      opacity: 1;
+  }
+  to {
+      transform: translateY(-100vh);
+      opacity: 0;
+  }
+}
+
+@keyframes trainMoveLeft {
+  from { transform: translateX(0%); }
+  to { transform: translateX(-100%); }
+}
+
+/* Keyframes: Smooth, infinite right slide */
+@keyframes trainMoveRight {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0%); }
+}
+
+/* --- Larger Image Sizing for Mobile Phones --- */
+@media (max-width: 768px) {
+  .marq-group img {
+    width: 110px;  /* Increased from 80px */
+    height: 110px; /* Increased from 80px */
+    border-radius: 10px;
+  }
+  .marq-group {
+    gap: 15px;
+    padding-right: 15px;
+  }
+}
